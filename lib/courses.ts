@@ -1,0 +1,268 @@
+import { promises as fs } from "fs";
+import path from "path";
+import { createWhatsappUrl, fallbackWhatsappPhone } from "@/lib/whatsapp";
+
+export type CourseDetail = {
+  title: string;
+  slug: string;
+  category: string;
+  shortDescription: string;
+  duration: string;
+  price: string;
+  cardPrice?: string;
+  location: string;
+  certificates?: string[];
+  participants?: string;
+  targetAudience?: string[];
+  longDescription: string;
+  curriculum?: Array<{
+    title: string;
+    items: string[];
+  }>;
+  importantNotes?: string[];
+  possibleMasterclasses?: string[];
+  eventSupport?: string[];
+  whatStudentsWillLearn: string[];
+  finalResult: string;
+  imageUrl: string;
+};
+
+export const whatsappPhone = fallbackWhatsappPhone;
+
+const dataDirectory = path.join(process.cwd(), "data");
+const coursesFile = path.join(dataDirectory, "courses.json");
+
+export const defaultCourses: CourseDetail[] = [
+  {
+    title: "Professional Makeup Course",
+    slug: "professional-makeup",
+    category: "Makeup",
+    shortDescription: "A complete 6-day professional makeup training program combining theory, face analysis, product selection, practical application, and final evaluation.",
+    duration: "6 days, 3 hours per day",
+    price: "$500",
+    location: "Inside EB Academy",
+    certificates: ["EB Academy certificate: $10", "American Board certificate: $150", "Lebanese government certificate: $100"],
+    longDescription: "This professional makeup course is designed for beginners and aspiring artists who want to learn makeup seriously and practically. The course combines theory with direct hands-on application. Students learn skin preparation, face anatomy, natural makeup, bridal makeup, evening makeup, trendy looks, correction techniques, product selection, and final portfolio preparation.",
+    curriculum: [
+      { title: "Day 1: Theory + Skin Preparation", items: ["Skin types", "Face preparation", "Color theory", "Hygiene and professional tools", "Choosing products according to skin type", "Brushes and product usage"] },
+      { title: "Day 2: Face Anatomy + No Makeup Look", items: ["Face shapes", "Contour and highlight placement", "Natural makeup", "Skin tint and light foundation", "Soft sculpting"] },
+      { title: "Day 3: Bridal Makeup / Soft Glam / Full Glam", items: ["Long-lasting skin preparation", "Full coverage", "Sculpting and lighting", "Brows", "Halo eyes", "Lashes", "Lipstick selection"] },
+      { title: "Day 4: Evening and Party Makeup", items: ["Smokey eyes", "Strong evening foundation", "Evening contour", "Dramatic eye makeup", "Photography makeup techniques"] },
+      { title: "Day 5: Trendy and Modern Looks", items: ["Dewy / glass skin", "Editorial skin finish", "Graphic liner", "Modern blush techniques", "Monochrome and contrasting colors"] },
+      { title: "Day 6: Full Training + Evaluation", items: ["Independent full makeup execution", "Time management", "Personal style", "Correction", "Final touches", "Final portfolio photos"] },
+    ],
+    whatStudentsWillLearn: ["Skin preparation and hygiene", "Face analysis and correction", "Natural, bridal, evening, and trendy makeup looks", "Product selection and professional tool usage", "Independent full-look execution"],
+    finalResult: "Students should be able to perform a full professional makeup look independently and receive their course certificate.",
+    imageUrl: "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=1100&q=85",
+  },
+  {
+    title: "Skin Care Training Program",
+    slug: "skin-care-training",
+    category: "Skincare",
+    shortDescription: "A 6-day skincare training program covering skin analysis, cleansing, massage, masks, hydrafacial, luxury treatments, and final practice.",
+    duration: "6 days, 3 hours per day",
+    price: "$500",
+    location: "Inside EB Academy",
+    certificates: ["EB Academy certificate: $10", "American Board certificate: $150", "Lebanese government certificate: $100"],
+    longDescription: "This course teaches students how to understand the skin professionally and perform complete skincare treatments. It combines theory, treatment protocols, massage techniques, mask application, hydrafacial, luxury protocols, and final practical evaluation.",
+    curriculum: [
+      { title: "Day 1: Skin Study and Theory", items: ["Skin types", "Skin layers", "Common skin problems", "Factors affecting skin health", "Diagnosis mistakes", "Product selection"] },
+      { title: "Day 2: Cleansing, Massage, and Masks", items: ["Professional cleansing steps", "Removing makeup correctly", "Steaming and opening pores", "Japanese lifting and sculpting massage", "French relaxing massage", "Face lift massage", "Peel-off masks", "Hydrating, deep cleansing, and brightening masks"] },
+      { title: "Day 3: Full Practice Day", items: ["Complete facial massage", "Masks and peel-off application", "Correction of mistakes", "Professional face-lifting movements"] },
+      { title: "Day 4: Hydrafacial and Deep Cleansing", items: ["What hydrafacial is", "Machine steps", "Tools and cleaning", "Contraindications", "Blackhead extraction", "Deep cleansing protocol"] },
+      { title: "Day 5: Stone Therapy + Collagen Mask + Perles a Diamant", items: ["Stone therapy benefits", "Hot/cold stone usage", "Collagen mask protocol", "Diamond/luxury brightening protocol", "Full luxury treatment practice"] },
+      { title: "Day 6: Full Practice + Final Application + Certificate Distribution", items: ["Complete session from start to finish", "Practical evaluation", "Final correction", "Documentation before/after", "Certificate distribution"] },
+    ],
+    whatStudentsWillLearn: ["Professional skin analysis", "Cleansing and mask protocols", "Japanese and French massage techniques", "Hydrafacial and deep cleansing basics", "Luxury skincare treatment flow"],
+    finalResult: "Students become able to diagnose skin type, cleanse professionally, apply massage protocols, perform hydrafacial/deep cleansing, and deliver a complete professional skincare session.",
+    imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1100&q=85",
+  },
+  {
+    title: "Self Makeup / Auto Self Makeup Training",
+    slug: "self-makeup",
+    category: "Makeup",
+    shortDescription: "A 2-day practical self-makeup course for beginners who want to learn how to apply makeup on themselves confidently.",
+    duration: "2 days, 3 hours per session",
+    price: "$150 placeholder, can be changed later",
+    location: "Inside EB Academy",
+    certificates: ["EB Academy certificate optional"],
+    targetAudience: ["Beginners in makeup", "Women interested in self-makeup", "People who want to improve their daily/evening look", "No previous experience required"],
+    longDescription: "This course is for beginners, women interested in learning self-makeup, and anyone who wants to improve their daily or evening appearance. No previous experience is required. The training is practical and teaches students step by step how to apply makeup on themselves.",
+    curriculum: [
+      { title: "Day 1: Natural Daily Makeup / No Makeup Makeup / Everyday Look", items: ["Skin preparation", "Choosing the right foundation", "Correcting skin tone", "Soft contouring", "Blush placement", "Natural brows", "Daily eye makeup", "Mascara", "Lipstick selection"] },
+      { title: "Day 2: Glamorous Night Look", items: ["Evening skin preparation", "Higher coverage foundation", "Full face makeup", "Glamorous eye makeup", "Eyeliner", "Lashes", "Lips", "Final setting"] },
+    ],
+    whatStudentsWillLearn: ["Daily self-makeup", "Evening glam application", "Foundation and tone correction", "Brows, eyes, lashes, and lips", "How to choose products for personal use"],
+    finalResult: "Students learn how to create a clean daily look and a more glamorous evening look on themselves.",
+    imageUrl: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1100&q=85",
+  },
+  {
+    title: "Lamination Course",
+    slug: "lamination",
+    category: "Beauty Techniques",
+    shortDescription: "A focused one-session lamination training course including product preparation, safety, application, and finishing.",
+    duration: "1 session",
+    price: "$100, including full lamination kit",
+    location: "Inside EB Academy",
+    certificates: ["EB Academy certificate: $10", "American Board certificate: $150"],
+    longDescription: "A focused practical course teaching lamination techniques, product usage, preparation, safety, and application. It is designed for students who want to add eyebrow or lamination services to their beauty skills.",
+    curriculum: [{ title: "Lamination Training", items: ["Introduction to lamination", "Tools and product preparation", "Safety and hygiene", "Step-by-step lamination application", "Correction and finishing", "Aftercare instructions"] }],
+    whatStudentsWillLearn: ["Product preparation", "Safety and hygiene", "Step-by-step lamination application", "Correction and finishing", "Aftercare instructions"],
+    finalResult: "Students can perform a basic lamination service safely and professionally.",
+    imageUrl: "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?auto=format&fit=crop&w=1100&q=85",
+  },
+  {
+    title: "Mesotherapy Course",
+    slug: "mesotherapy",
+    category: "Aesthetic Training",
+    shortDescription: "A 2-session training course combining online and in-person learning for mesotherapy techniques, device usage, and product protocols.",
+    duration: "2 sessions: online + in-person",
+    price: "$100, includes device + 5 needles + 2 serums",
+    location: "Inside EB Academy / Hybrid",
+    certificates: ["EB Academy certificate: $10", "American Board certificate: $150"],
+    longDescription: "This course introduces students to mesotherapy concepts, safety, product protocols, device usage, and guided practice. It should be presented as a professional aesthetic training course with clear wording that procedures must follow safe professional standards and local regulations.",
+    curriculum: [{ title: "Mesotherapy Training", items: ["Introduction to mesotherapy", "Skin concerns and treatment planning", "Product and serum overview", "Device usage", "Hygiene and safety", "Practical demonstration", "Guided practice"] }],
+    whatStudentsWillLearn: ["Mesotherapy basics", "Treatment planning", "Product and serum overview", "Device usage", "Hygiene and safety protocols"],
+    finalResult: "Students understand the basics of mesotherapy training and how to follow professional protocols safely.",
+    imageUrl: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1100&q=85",
+  },
+  {
+    title: "Makeup & Skin Care External Training",
+    slug: "external-makeup-skincare",
+    category: "External Training",
+    shortDescription: "A flexible external training option for makeup and skincare groups outside EB Academy.",
+    duration: "Option 1: 4 training sessions / Option 2: 2 training days",
+    price: "Option 1: purchase products worth $250 + extra EB Academy training day products worth $100. Option 2: purchase products worth $150 + extra EB Academy practical day products worth $100.",
+    cardPrice: "Custom options",
+    location: "Outside EB Academy",
+    participants: "Minimum 10, maximum 20",
+    longDescription: "This is a group training option outside EB Academy for students, teams, or organizations that want EB Academy to deliver makeup and skincare training at another location. The program includes product requirements, practical application, and optional additional training inside EB Academy. Option 1 includes 4 training sessions with product purchases worth $250 plus an extra EB Academy training day with products worth $100. Option 2 includes 2 training days with product purchases worth $150 plus an extra EB Academy practical day with products worth $100.",
+    importantNotes: ["External trainings require 10 to 20 participants", "Product purchase conditions apply for external trainings", "Scheduling must be arranged with EB Academy management", "Certificate prices are fixed whether the training is inside or outside the academy"],
+    whatStudentsWillLearn: ["Group makeup and skincare fundamentals", "Guided practical application", "Product usage requirements", "External training workflow", "Optional extra practice at EB Academy"],
+    finalResult: "Groups receive professional guided beauty training in their own location, with the possibility of additional practical sessions at EB Academy.",
+    imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1100&q=85",
+  },
+  {
+    title: "Extra Practice Day",
+    slug: "practice-day",
+    category: "Practice",
+    shortDescription: "An optional intensive practice day for students who want more supervised hands-on training.",
+    duration: "1 full day",
+    price: "$25 per participant",
+    location: "Inside EB Academy",
+    certificates: ["No certificate by default"],
+    longDescription: "This optional extra practice day gives students more time to polish their techniques before starting professional work. It is fully practical and supervised.",
+    curriculum: [{ title: "Practice Day", items: ["Additional supervised practice", "Correction of mistakes", "Technique refinement", "Individual notes and feedback", "Preparation before professional work"] }],
+    whatStudentsWillLearn: ["Technique refinement", "Mistake correction", "Professional readiness", "More practical confidence", "Personal feedback"],
+    finalResult: "Students gain more confidence, practical fluency, and readiness before working professionally.",
+    imageUrl: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=1100&q=85",
+  },
+  {
+    title: "Masterclasses",
+    slug: "masterclasses",
+    category: "Masterclass",
+    shortDescription: "Premium short masterclasses led by Eliano Bou Assi, including makeup, skincare, lamination, mesotherapy, and product-focused sessions.",
+    duration: "Varies by masterclass",
+    price: "Varies by masterclass",
+    cardPrice: "Varies",
+    location: "EB Academy / selected venues",
+    certificates: ["Depends on the masterclass"],
+    longDescription: "This page presents special masterclasses and events led by Eliano Bou Assi. The design should support changing events later without rebuilding the page.",
+    possibleMasterclasses: ["Nutritional Makeup Masterclass", "Skincare / Xposome Masterclass", "Lamination Masterclass", "Mesotherapy Masterclass"],
+    eventSupport: ["Event image", "Date", "Time", "Location", "Price", "Short description", "WhatsApp booking button"],
+    whatStudentsWillLearn: ["Focused premium beauty techniques", "Product-led education", "Event-based intensive learning", "Masterclass-specific methods", "Direct guidance from Eliano Bou Assi"],
+    finalResult: "Visitors can explore current and upcoming premium masterclasses and contact EB Academy to reserve their place.",
+    imageUrl: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1100&q=85",
+  },
+];
+
+export const courses = defaultCourses;
+
+async function ensureCoursesFile() {
+  await fs.mkdir(dataDirectory, { recursive: true });
+
+  try {
+    await fs.access(coursesFile);
+  } catch {
+    await writeCourses(defaultCourses);
+  }
+}
+
+function normalizeList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item) => (typeof item === "string" ? item.trim() : ""))
+    .filter(Boolean);
+}
+
+function normalizeCurriculum(value: unknown): CourseDetail["curriculum"] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((section) => {
+      const partial = section as { title?: unknown; items?: unknown };
+      return {
+        title: typeof partial.title === "string" ? partial.title.trim() : "",
+        items: normalizeList(partial.items),
+      };
+    })
+    .filter((section) => section.title || section.items.length);
+}
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function normalizeCourse(course: Partial<CourseDetail>, index: number): CourseDetail {
+  const title = course.title?.trim() || `Course ${index + 1}`;
+
+  return {
+    title,
+    slug: course.slug?.trim() || slugify(title),
+    category: course.category?.trim() || "",
+    shortDescription: course.shortDescription?.trim() || "",
+    duration: course.duration?.trim() || "",
+    price: course.price?.trim() || "",
+    cardPrice: course.cardPrice?.trim() || undefined,
+    location: course.location?.trim() || "",
+    certificates: normalizeList(course.certificates),
+    participants: course.participants?.trim() || undefined,
+    targetAudience: normalizeList(course.targetAudience),
+    longDescription: course.longDescription?.trim() || "",
+    curriculum: normalizeCurriculum(course.curriculum),
+    importantNotes: normalizeList(course.importantNotes),
+    possibleMasterclasses: normalizeList(course.possibleMasterclasses),
+    eventSupport: normalizeList(course.eventSupport),
+    whatStudentsWillLearn: normalizeList(course.whatStudentsWillLearn),
+    finalResult: course.finalResult?.trim() || "",
+    imageUrl: course.imageUrl?.trim() || "",
+  };
+}
+
+export async function readCourses(): Promise<CourseDetail[]> {
+  await ensureCoursesFile();
+  const file = await fs.readFile(coursesFile, "utf8");
+  const parsed = JSON.parse(file) as Partial<CourseDetail>[];
+  return parsed.map(normalizeCourse);
+}
+
+export async function writeCourses(nextCourses: CourseDetail[]) {
+  await fs.mkdir(dataDirectory, { recursive: true });
+  const normalizedCourses = nextCourses.map(normalizeCourse);
+  await fs.writeFile(coursesFile, JSON.stringify(normalizedCourses, null, 2), "utf8");
+  return normalizedCourses;
+}
+
+export async function getCourseBySlug(slug: string) {
+  const currentCourses = await readCourses();
+  return currentCourses.find((course) => course.slug === slug) ?? null;
+}
+
+export function getCourseWhatsappUrl(courseTitle: string) {
+  const message = `Hello EB Academy, I would like to ask about the ${courseTitle} course.`;
+  return createWhatsappUrl(whatsappPhone, message);
+}

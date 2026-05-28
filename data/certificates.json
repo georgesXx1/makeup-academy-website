@@ -1,0 +1,32 @@
+[
+  {
+    "studentName": "lebron james",
+    "courseName": "Mesotherapy Course",
+    "issueDate": "2026-05-28",
+    "code": "EB-2026-LJ-0005"
+  },
+  {
+    "studentName": "charbel habash",
+    "courseName": "Editorial & Soft Glam Masterclass",
+    "issueDate": "2026-05-10",
+    "code": "EB-2026-CH-0004"
+  },
+  {
+    "studentName": "Diana Mansour",
+    "courseName": "Editorial & Soft Glam Masterclass",
+    "issueDate": "2026-05-10",
+    "code": "EB-2026-DM-0003"
+  },
+  {
+    "studentName": "Mari habash",
+    "courseName": "Editorial & Soft Glam Masterclass",
+    "issueDate": "2026-05-10",
+    "code": "EB-2026-MH-0003"
+  },
+  {
+    "studentName": "Noor Salim",
+    "courseName": "Professional Makeup Foundations",
+    "issueDate": "2026-04-02",
+    "code": "MAKEUP-2026-002"
+  }
+]
