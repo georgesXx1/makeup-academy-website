@@ -7,7 +7,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json({ content: await readContent() });
+  try {
+    return NextResponse.json({ content: await readContent() });
+  } catch (error) {
+    return NextResponse.json({ message: getErrorMessage(error, "Could not load site content.") }, { status: 500 });
+  }
 }
 
 export async function PUT(request: NextRequest) {
@@ -15,17 +19,25 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const body = (await request.json()) as Partial<SiteContent>;
+  try {
+    const body = (await request.json()) as Partial<SiteContent>;
 
-  if (!Array.isArray(body.courses) || !Array.isArray(body.team) || !body.contact) {
-    return NextResponse.json({ message: "Courses, team, and contact info must be provided." }, { status: 400 });
+    if (!Array.isArray(body.courses) || !Array.isArray(body.team) || !body.contact) {
+      return NextResponse.json({ message: "Courses, team, and contact info must be provided." }, { status: 400 });
+    }
+
+    const content = await writeContent({
+      courses: body.courses,
+      team: body.team,
+      contact: body.contact,
+    });
+
+    return NextResponse.json({ content });
+  } catch (error) {
+    return NextResponse.json({ message: getErrorMessage(error, "Could not save site content.") }, { status: 500 });
   }
+}
 
-  const content = await writeContent({
-    courses: body.courses,
-    team: body.team,
-    contact: body.contact,
-  });
-
-  return NextResponse.json({ content });
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
 }

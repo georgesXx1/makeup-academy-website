@@ -11,6 +11,16 @@ function hasBlobStorage() {
   );
 }
 
+function isVercelRuntime() {
+  return Boolean(process.env.VERCEL || process.env.VERCEL_ENV);
+}
+
+function assertWritableStorage() {
+  if (isVercelRuntime() && !hasBlobStorage()) {
+    throw new Error("Vercel Blob is not configured. Connect a Blob store to this Vercel project so admin changes can be saved.");
+  }
+}
+
 async function readStream(stream: ReadableStream<Uint8Array>) {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
@@ -80,6 +90,7 @@ export async function writeJsonFile<T>(fileName: string, value: T) {
     return;
   }
 
+  assertWritableStorage();
   await fs.mkdir(dataDirectory, { recursive: true });
   await fs.writeFile(path.join(dataDirectory, fileName), content, "utf8");
 }

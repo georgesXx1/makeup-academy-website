@@ -7,7 +7,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json({ certificates: await readCertificates() });
+  try {
+    return NextResponse.json({ certificates: await readCertificates() });
+  } catch (error) {
+    return NextResponse.json({ message: getErrorMessage(error, "Could not load certificates.") }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -55,6 +59,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ certificates }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ message: error instanceof Error ? error.message : "Could not add certificate." }, { status: 409 });
+    return NextResponse.json({ message: getErrorMessage(error, "Could not add certificate.") }, { status: 409 });
   }
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
 }

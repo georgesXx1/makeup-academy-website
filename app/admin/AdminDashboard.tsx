@@ -48,6 +48,37 @@ const tabs: Array<{ id: AdminTab; label: string; icon: React.ReactNode }> = [
   { id: "contact", label: "Contact", icon: <Mail size={18} /> },
 ];
 
+async function readResponseJson(response: Response) {
+  const text = await response.text();
+
+  if (!text) return {};
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { message: text };
+  }
+}
+
+async function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit) {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 30000);
+
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+function getClientErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof DOMException && error.name === "AbortError") {
+    return "The save request timed out. Please check the Vercel deployment logs and Blob storage connection.";
+  }
+
+  return error instanceof Error ? error.message : fallback;
+}
+
 export function AdminDashboard() {
   const [password, setPassword] = useState("");
   const [activePassword, setActivePassword] = useState("");
@@ -184,25 +215,29 @@ export function AdminDashboard() {
     setSavingContent(true);
     setMessage("");
 
-    const response = await fetch("/api/admin/content", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "x-admin-password": activePassword,
-      },
-      body: JSON.stringify(nextContent),
-    });
-    const data = await response.json();
+    try {
+      const response = await fetchWithTimeout("/api/admin/content", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": activePassword,
+        },
+        body: JSON.stringify(nextContent),
+      });
+      const data = await readResponseJson(response);
 
-    if (!response.ok) {
-      setMessage(data.message || "Could not save content.");
+      if (!response.ok) {
+        setMessage(data.message || "Could not save content.");
+        return;
+      }
+
+      setContent(data.content);
+      setMessage("Site content saved.");
+    } catch (error) {
+      setMessage(getClientErrorMessage(error, "Could not save content."));
+    } finally {
       setSavingContent(false);
-      return;
     }
-
-    setContent(data.content);
-    setMessage("Site content saved.");
-    setSavingContent(false);
   }
 
   function updateCourse(slug: string, key: CourseTextKey, value: string) {
@@ -268,25 +303,29 @@ export function AdminDashboard() {
     setSavingContent(true);
     setMessage("");
 
-    const response = await fetch("/api/admin/courses", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "x-admin-password": activePassword,
-      },
-      body: JSON.stringify({ courses: adminCourses }),
-    });
-    const data = await response.json();
+    try {
+      const response = await fetchWithTimeout("/api/admin/courses", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": activePassword,
+        },
+        body: JSON.stringify({ courses: adminCourses }),
+      });
+      const data = await readResponseJson(response);
 
-    if (!response.ok) {
-      setMessage(data.message || "Could not save courses.");
+      if (!response.ok) {
+        setMessage(data.message || "Could not save courses.");
+        return;
+      }
+
+      setAdminCourses(data.courses);
+      setMessage("Courses saved.");
+    } catch (error) {
+      setMessage(getClientErrorMessage(error, "Could not save courses."));
+    } finally {
       setSavingContent(false);
-      return;
     }
-
-    setAdminCourses(data.courses);
-    setMessage("Courses saved.");
-    setSavingContent(false);
   }
 
   function addTeamMember() {
