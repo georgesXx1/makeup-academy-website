@@ -4,20 +4,30 @@ import { BlobNotFoundError, get, put } from "@vercel/blob";
 
 const dataDirectory = path.join(process.cwd(), "data");
 
+function readEnv(name: string) {
+  const value = process.env[name];
+  return typeof value === "string" && value.trim() ? value.trim() : "";
+}
+
+function hasReadWriteToken() {
+  return Boolean(readEnv("BLOB_READ_WRITE_TOKEN"));
+}
+
+function hasStoreId() {
+  return Boolean(readEnv("BLOB_STORE_ID"));
+}
+
 function hasBlobStorage() {
-  return Boolean(
-    process.env.BLOB_READ_WRITE_TOKEN ||
-      (process.env.VERCEL_OIDC_TOKEN && process.env.BLOB_STORE_ID),
-  );
+  return hasReadWriteToken() || (isVercelRuntime() && hasStoreId());
 }
 
 function isVercelRuntime() {
-  return Boolean(process.env.VERCEL || process.env.VERCEL_ENV);
+  return Boolean(readEnv("VERCEL") || readEnv("VERCEL_ENV"));
 }
 
 function assertWritableStorage() {
   if (isVercelRuntime() && !hasBlobStorage()) {
-    throw new Error("Vercel Blob is not configured. Connect a Blob store to this Vercel project so admin changes can be saved.");
+    throw new Error("Vercel Blob is not configured. Missing BLOB_STORE_ID for Vercel OIDC Blob writes, or BLOB_READ_WRITE_TOKEN for token-based Blob writes.");
   }
 }
 
