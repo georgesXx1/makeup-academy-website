@@ -1,5 +1,4 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { readJsonFile, writeJsonFile } from "@/lib/jsonStorage";
 
 export type Course = {
   id: string;
@@ -37,8 +36,7 @@ export type SiteContent = {
 
 const courseLevels = ["Beginners", "Intermediate", "Advanced"];
 
-const dataDirectory = path.join(process.cwd(), "data");
-const contentFile = path.join(dataDirectory, "content.json");
+const contentFile = "content.json";
 
 export const defaultContent: SiteContent = {
   courses: [
@@ -106,16 +104,6 @@ export const defaultContent: SiteContent = {
   },
 };
 
-async function ensureContentFile() {
-  await fs.mkdir(dataDirectory, { recursive: true });
-
-  try {
-    await fs.access(contentFile);
-  } catch {
-    await writeContent(defaultContent);
-  }
-}
-
 function normalizeCourse(course: Partial<Course>, index: number): Course {
   const title = course.title?.trim() || `Course ${index + 1}`;
   const level = normalizeCourseLevel(course.level);
@@ -179,9 +167,7 @@ function slugify(value: string) {
 }
 
 export async function readContent(): Promise<SiteContent> {
-  await ensureContentFile();
-  const file = await fs.readFile(contentFile, "utf8");
-  const parsed = JSON.parse(file) as Partial<SiteContent>;
+  const parsed = await readJsonFile<Partial<SiteContent>>(contentFile, defaultContent);
 
   return {
     courses: (parsed.courses?.length ? parsed.courses : defaultContent.courses).map(normalizeCourse),
@@ -191,13 +177,12 @@ export async function readContent(): Promise<SiteContent> {
 }
 
 export async function writeContent(content: SiteContent) {
-  await fs.mkdir(dataDirectory, { recursive: true });
   const normalizedContent = {
     courses: content.courses.map(normalizeCourse),
     team: content.team.map(normalizeTeamMember),
     contact: normalizeContact(content.contact),
   };
 
-  await fs.writeFile(contentFile, JSON.stringify(normalizedContent, null, 2), "utf8");
+  await writeJsonFile(contentFile, normalizedContent);
   return normalizedContent;
 }

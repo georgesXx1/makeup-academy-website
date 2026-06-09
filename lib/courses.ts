@@ -1,6 +1,5 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { createWhatsappUrl, fallbackWhatsappPhone } from "@/lib/whatsapp";
+import { readJsonFile, writeJsonFile } from "@/lib/jsonStorage";
 
 export type CourseDetail = {
   title: string;
@@ -29,8 +28,7 @@ export type CourseDetail = {
 
 export const whatsappPhone = fallbackWhatsappPhone;
 
-const dataDirectory = path.join(process.cwd(), "data");
-const coursesFile = path.join(dataDirectory, "courses.json");
+const coursesFile = "courses.json";
 
 export const defaultCourses: CourseDetail[] = [
   {
@@ -178,16 +176,6 @@ export const defaultCourses: CourseDetail[] = [
 
 export const courses = defaultCourses;
 
-async function ensureCoursesFile() {
-  await fs.mkdir(dataDirectory, { recursive: true });
-
-  try {
-    await fs.access(coursesFile);
-  } catch {
-    await writeCourses(defaultCourses);
-  }
-}
-
 function normalizeList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
 
@@ -244,16 +232,13 @@ function normalizeCourse(course: Partial<CourseDetail>, index: number): CourseDe
 }
 
 export async function readCourses(): Promise<CourseDetail[]> {
-  await ensureCoursesFile();
-  const file = await fs.readFile(coursesFile, "utf8");
-  const parsed = JSON.parse(file) as Partial<CourseDetail>[];
+  const parsed = await readJsonFile<Partial<CourseDetail>[]>(coursesFile, defaultCourses);
   return parsed.map(normalizeCourse);
 }
 
 export async function writeCourses(nextCourses: CourseDetail[]) {
-  await fs.mkdir(dataDirectory, { recursive: true });
   const normalizedCourses = nextCourses.map(normalizeCourse);
-  await fs.writeFile(coursesFile, JSON.stringify(normalizedCourses, null, 2), "utf8");
+  await writeJsonFile(coursesFile, normalizedCourses);
   return normalizedCourses;
 }
 

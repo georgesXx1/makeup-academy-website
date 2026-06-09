@@ -1,5 +1,4 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { readJsonFile, writeJsonFile } from "@/lib/jsonStorage";
 
 export type Certificate = {
   studentName: string;
@@ -8,28 +7,14 @@ export type Certificate = {
   code: string;
 };
 
-const dataDirectory = path.join(process.cwd(), "data");
-const certificateFile = path.join(dataDirectory, "certificates.json");
-
-async function ensureStorageFile() {
-  await fs.mkdir(dataDirectory, { recursive: true });
-
-  try {
-    await fs.access(certificateFile);
-  } catch {
-    await fs.writeFile(certificateFile, JSON.stringify([], null, 2), "utf8");
-  }
-}
+const certificateFile = "certificates.json";
 
 export async function readCertificates(): Promise<Certificate[]> {
-  await ensureStorageFile();
-  const file = await fs.readFile(certificateFile, "utf8");
-  return JSON.parse(file) as Certificate[];
+  return readJsonFile<Certificate[]>(certificateFile, []);
 }
 
 export async function writeCertificates(certificates: Certificate[]) {
-  await ensureStorageFile();
-  await fs.writeFile(certificateFile, JSON.stringify(certificates, null, 2), "utf8");
+  await writeJsonFile(certificateFile, certificates);
 }
 
 export async function findCertificate(code: string) {
