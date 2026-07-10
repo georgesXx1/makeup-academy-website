@@ -27,9 +27,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <header className="sticky top-0 z-50 border-b border-[#b97866]/10 bg-[#fbf7f1]/82 backdrop-blur-xl">
           <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
             <Link href="/" className="group flex items-center gap-3" aria-label="EB Academy home">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#151313] text-sm font-semibold text-[#f6ead7] shadow-lg shadow-[#b97866]/20">
-                EB
-              </span>
+              <img src="/brand-logo.png" alt="" className="h-12 w-9 object-contain" />
               <span className="leading-tight">
                 <span className="block font-display text-xl font-semibold tracking-wide">EB Academy</span>
                 <span className="hidden text-xs uppercase tracking-[0.28em] text-[#8f695e] sm:block">Eliano Bou Assi Academy</span>
@@ -49,6 +47,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </header>
         {children}
         <footer className="border-t border-[#b97866]/10 px-5 py-10 text-center text-sm text-[#7a625b]">
+          <img src="/brand-logo.png" alt="EB Academy logo" className="mx-auto mb-4 h-16 w-12 object-contain" />
           <p>EB Academy - Eliano Bou Assi Academy</p>
           {footerContact && <p className="mt-2">{footerContact}</p>}
         </footer>

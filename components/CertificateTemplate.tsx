@@ -25,15 +25,10 @@ export function CertificateTemplate({ certificate, baseUrl, qrCodeDataUrl }: Cer
 
       <div className={styles.content}>
         <header>
-          <div className={styles.seal}>EB</div>
-          <div className={styles.academy}>
-            <span className={styles.spark} aria-hidden="true" />
-            <span>EB Academy</span>
-            <span className={styles.spark} aria-hidden="true" />
-          </div>
+          <img className={styles.brandLogo} src="/brand-logo.png" alt="EB Academy logo" />
         </header>
 
-        <section>
+        <section className={styles.mainContent}>
           <h1 className={styles.title}>Certificate of Completion</h1>
           <div className={styles.rule}><span aria-hidden="true" /></div>
           <p className={styles.presented}>This certificate is proudly presented to</p>
@@ -59,11 +54,7 @@ export function CertificateTemplate({ certificate, baseUrl, qrCodeDataUrl }: Cer
           </div>
 
           <div className={styles.signatureArea}>
-            <img
-              className={styles.signatureImage}
-              src="/signatures/eliano-bou-assi.svg"
-              alt="Eliano Bou Assi signature"
-            />
+            <div className={styles.signatureImage} aria-label="Eliano Bou Assi signature">Eliano</div>
             <div className={styles.signatureLine}><span aria-hidden="true" /></div>
             <p className={styles.signatureName}>Eliano Bou Assi</p>
             <p className={styles.signatureTitle}>International Makeup Artist &amp; Beauty Educator</p>
