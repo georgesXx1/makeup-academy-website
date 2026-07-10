@@ -61,7 +61,7 @@ export function CertificateTemplate({ certificate, baseUrl, qrCodeDataUrl }: Cer
           <div className={styles.signatureArea}>
             <img
               className={styles.signatureImage}
-              src="/signatures/eliano-bou-assi.png"
+              src="/signatures/eliano-bou-assi.svg"
               alt="Eliano Bou Assi signature"
             />
             <div className={styles.signatureLine}><span aria-hidden="true" /></div>
