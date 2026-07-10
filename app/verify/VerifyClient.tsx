@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { BadgeCheck, Download, Search, ShieldCheck, XCircle } from "lucide-react";
-import { downloadCertificatePng } from "@/lib/certificateDownload";
+import { openCertificatePreview } from "@/lib/certificateDownload";
 
 type Certificate = {
   studentName: string;
@@ -87,11 +87,11 @@ export function VerifyClient({ initialCode }: { initialCode?: string }) {
           </div>
           <button
             type="button"
-            onClick={() => void downloadCertificatePng(certificate)}
+            onClick={() => openCertificatePreview(certificate)}
             className="shine mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#151313] px-6 text-sm font-semibold text-[#f6ead7] transition hover:-translate-y-0.5"
           >
             <Download size={18} />
-            Download certificate PNG
+            Preview / download certificate
           </button>
         </section>
       )}

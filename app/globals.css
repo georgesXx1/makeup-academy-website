@@ -78,3 +78,25 @@ body {
     transform: translateY(0);
   }
 }
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  body:has(.certificate-preview) {
+    background: #fff;
+  }
+
+  body:has(.certificate-preview) header,
+  body:has(.certificate-preview) footer,
+  body:has(.certificate-preview) .certificate-actions {
+    display: none;
+  }
+
+  body:has(.certificate-preview) .certificate-preview {
+    min-height: auto;
+    padding: 0;
+  }
+}

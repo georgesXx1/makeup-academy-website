@@ -2,7 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { AtSign, Award, BookOpen, Download, Image, Mail, MapPin, MessageCircle, Phone, Plus, Save, Search, Trash2, Users } from "lucide-react";
-import { downloadCertificatePng } from "@/lib/certificateDownload";
+import { openCertificatePreview } from "@/lib/certificateDownload";
 import type { ContactInfo, SiteContent, TeamMember } from "@/lib/content";
 import type { CourseDetail } from "@/lib/courses";
 
@@ -429,7 +429,7 @@ export function AdminDashboard() {
                     <p className="mt-2 break-all text-xs text-[#7a625b]">QR URL: /verify?code={certificate.code}</p>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => void downloadCertificatePng(certificate)} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#b97866]/20 text-[#151313] transition hover:bg-[#fbf7f1]" aria-label={`Download ${certificate.studentName} certificate as PNG`}>
+                    <button onClick={() => openCertificatePreview(certificate)} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#b97866]/20 text-[#151313] transition hover:bg-[#fbf7f1]" aria-label={`Preview and print ${certificate.studentName} certificate`}>
                       <Download size={18} />
                     </button>
                     <button onClick={() => void removeCertificate(certificate.code)} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-red-500/20 text-red-700 transition hover:bg-red-50" aria-label={`Delete ${certificate.code}`}>
