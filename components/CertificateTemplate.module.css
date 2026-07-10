@@ -150,12 +150,12 @@
 
 .brandWordmark {
   display: inline-grid;
-  grid-template-columns: 46px auto 46px;
+  grid-template-columns: 58px auto 58px;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 2px;
   color: var(--deep-gold);
-  font-size: 20px;
+  font-size: 28px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
   line-height: 1;
