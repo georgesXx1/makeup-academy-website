@@ -27,7 +27,7 @@ export function CertificateActions({ code, studentName }: CertificateActionsProp
         backgroundColor: "#fbf7ec",
         cacheBust: true,
         pixelRatio: A4_LANDSCAPE_WIDTH / rect.width,
-        skipFonts: true,
+        skipFonts: false,
       });
 
       const link = document.createElement("a");

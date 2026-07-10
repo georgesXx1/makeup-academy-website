@@ -26,6 +26,7 @@ export function CertificateTemplate({ certificate, baseUrl, qrCodeDataUrl }: Cer
       <div className={styles.content}>
         <header>
           <img className={styles.brandLogo} src="/brand-logo.png" alt="EB Academy logo" />
+          <div className={styles.brandWordmark}>Academy</div>
         </header>
 
         <section className={styles.mainContent}>
