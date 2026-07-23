@@ -22,7 +22,10 @@ export function CertificateActions({ code, studentName }: CertificateActionsProp
     setDownloading(true);
 
     try {
+      await document.fonts.ready;
       const rect = certificate.getBoundingClientRect();
+      await waitForImages(certificate);
+
       const dataUrl = await toPng(certificate, {
         backgroundColor: "#fbf7ec",
         cacheBust: true,
@@ -61,6 +64,20 @@ export function CertificateActions({ code, studentName }: CertificateActionsProp
         {downloading ? "Preparing..." : "Download A4 PNG"}
       </button>
     </div>
+  );
+}
+
+async function waitForImages(container: HTMLElement) {
+  const images = Array.from(container.querySelectorAll("img"));
+  await Promise.all(
+    images.map((image) => {
+      if (image.complete) return Promise.resolve();
+
+      return new Promise<void>((resolve) => {
+        image.addEventListener("load", () => resolve(), { once: true });
+        image.addEventListener("error", () => resolve(), { once: true });
+      });
+    }),
   );
 }
 

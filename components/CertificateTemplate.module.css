@@ -5,8 +5,8 @@
   --ink: #171713;
   --ivory: #fbf7ec;
   position: relative;
-  width: 1123px;
-  height: 794px;
+  width: 1200px;
+  height: 848px;
   margin: 0 auto;
   overflow: hidden;
   background:
@@ -14,7 +14,6 @@
     repeating-radial-gradient(ellipse at 18% 28%, rgba(183, 131, 44, 0.09) 0 1px, transparent 1px 9px),
     repeating-radial-gradient(ellipse at 82% 28%, rgba(183, 131, 44, 0.07) 0 1px, transparent 1px 10px),
     linear-gradient(135deg, #fffaf0 0%, #f8efd9 48%, #fffaf0 100%);
-  border: 3px solid var(--deep-gold);
   box-shadow: 0 28px 70px rgba(89, 60, 19, 0.14);
   color: var(--ink);
   font-family: Georgia, "Times New Roman", serif;
@@ -30,14 +29,14 @@
 .certificate::after {
   content: "";
   position: absolute;
-  inset: 18px;
+  inset: 54px;
   pointer-events: none;
-  border: 1px solid var(--gold-soft);
+  border: 3px solid var(--deep-gold);
 }
 
 .certificate::after {
-  inset: 30px;
-  border-color: rgba(183, 131, 44, 0.68);
+  inset: 70px;
+  border: 1px solid rgba(183, 131, 44, 0.68);
 }
 
 .corner {
@@ -106,25 +105,25 @@
 }
 
 .topLeft {
-  top: 38px;
-  left: 48px;
+  top: 76px;
+  left: 84px;
 }
 
 .topRight {
-  top: 38px;
-  right: 48px;
+  top: 76px;
+  right: 84px;
   transform: scaleX(-1);
 }
 
 .bottomLeft {
-  bottom: 38px;
-  left: 48px;
+  bottom: 76px;
+  left: 84px;
   transform: scaleY(-1);
 }
 
 .bottomRight {
-  right: 48px;
-  bottom: 38px;
+  right: 84px;
+  bottom: 76px;
   transform: scale(-1);
 }
 
@@ -133,28 +132,28 @@
   z-index: 10;
   display: grid;
   height: 100%;
-  grid-template-rows: 132px 414px 172px 22px;
-  padding: 22px 112px 18px;
+  grid-template-rows: 164px 396px 174px 24px;
+  padding: 42px 154px 34px;
   text-align: center;
 }
 
 .brandLogo {
   display: block;
-  width: 64px;
-  height: 86px;
+  width: 50px;
+  height: 66px;
   object-fit: contain;
-  margin: 0 auto;
+  margin: 16px auto 0;
   filter: drop-shadow(0 5px 8px rgba(71, 47, 13, 0.12));
 }
 
 .brandWordmark {
   display: inline-grid;
-  grid-template-columns: 58px auto 58px;
+  grid-template-columns: 54px auto 54px;
   align-items: center;
   gap: 12px;
-  margin-top: 2px;
+  margin-top: 6px;
   color: var(--deep-gold);
-  font-size: 28px;
+  font-size: 25px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
   line-height: 1;
@@ -165,6 +164,7 @@
   content: "";
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--gold));
+  transform: translateY(-3px);
 }
 
 .brandWordmark::after {
@@ -177,7 +177,7 @@
   grid-template-rows: auto auto auto minmax(58px, auto) auto auto auto;
   align-content: center;
   min-height: 0;
-  padding: 0 18px 6px;
+  padding: 0 18px 22px;
 }
 
 .rule::before,
@@ -202,7 +202,7 @@
 .title {
   margin: 0 0 7px;
   color: var(--deep-gold);
-  font-size: 43px;
+  font-size: 40px;
   font-weight: 500;
   letter-spacing: 0.035em;
   line-height: 1;
@@ -236,25 +236,21 @@
 }
 
 .presented {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 18px;
-  margin: 6px auto 0;
+  display: block;
+  margin: 8px auto 0;
   color: #211f1a;
   font-size: 20px;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .presented::before,
 .presented::after {
-  content: "";
-  width: 112px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold));
+  content: none;
 }
 
 .presented::after {
-  background: linear-gradient(90deg, var(--gold), transparent);
+  background: none;
 }
 
 .studentName {
@@ -342,11 +338,11 @@
   position: relative;
   z-index: 10;
   display: grid;
-  grid-template-columns: minmax(170px, 1fr) minmax(280px, 1.14fr) minmax(210px, 1fr);
+  grid-template-columns: minmax(170px, 1fr) minmax(280px, 1.08fr) minmax(210px, 1fr);
   align-items: center;
-  gap: 30px;
+  gap: 26px;
   min-height: 0;
-  padding: 0 18px 12px;
+  padding: 0 18px 10px;
 }
 
 .qrArea {

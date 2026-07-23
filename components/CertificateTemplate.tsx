@@ -35,7 +35,6 @@ export function CertificateTemplate({ certificate, baseUrl, qrCodeDataUrl }: Cer
         <section className={styles.mainContent}>
           <h1 className={styles.title}>Certificate of Completion</h1>
           <div className={styles.rule}><span aria-hidden="true" /></div>
-          <p className={styles.presented}>This certificate is proudly presented to</p>
           <p className={styles.studentName} style={studentNameStyle}>{certificate.studentName}</p>
           <div className={styles.decoratedLine}><span aria-hidden="true" /></div>
           <p className={styles.completionText}>for successfully completing the training program</p>
