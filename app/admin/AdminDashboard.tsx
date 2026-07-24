@@ -1,10 +1,11 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { AtSign, Award, BookOpen, Download, Image, Mail, MapPin, MessageCircle, Phone, Plus, Save, Search, Trash2, Users } from "lucide-react";
+import { AtSign, Award, BookOpen, CalendarDays, Clock, Download, Image, Mail, MapPin, MessageCircle, Phone, Plus, Save, Search, Sparkles, Trash2, Users } from "lucide-react";
 import { openCertificatePreview } from "@/lib/certificateDownload";
 import type { ContactInfo, SiteContent, TeamMember } from "@/lib/content";
 import type { CourseDetail } from "@/lib/courses";
+import type { AcademyEvent, ScheduleTarget, WeeklyScheduleItem } from "@/lib/events";
 
 type Certificate = {
   studentName: string;
@@ -13,9 +14,11 @@ type Certificate = {
   code: string;
 };
 
-type AdminTab = "certificates" | "courses" | "team" | "contact";
+type AdminTab = "certificates" | "courses" | "events" | "schedule" | "team" | "contact";
 type CourseTextKey = "title" | "slug" | "category" | "shortDescription" | "duration" | "price" | "cardPrice" | "location" | "participants" | "longDescription" | "finalResult" | "imageUrl";
 type ListCourseKey = "certificates" | "targetAudience" | "importantNotes" | "possibleMasterclasses" | "eventSupport" | "whatStudentsWillLearn";
+type EventTextKey = keyof AcademyEvent;
+type ScheduleTextKey = "id" | "date" | "startTime" | "endTime" | "room" | "note";
 
 const emptyCertificateForm = {
   studentNames: "",
@@ -41,9 +44,34 @@ const emptyContact: ContactInfo = {
   instagram: "",
 };
 
+const emptyEvent: AcademyEvent = {
+  title: "New academy event",
+  slug: "new-academy-event",
+  category: "Event",
+  shortDescription: "",
+  longDescription: "",
+  dateLabel: "",
+  timeLabel: "",
+  location: "",
+  price: "",
+  imageUrl: "",
+};
+
+const emptyScheduleItem: WeeklyScheduleItem = {
+  id: "",
+  date: new Date().toISOString().slice(0, 10),
+  startTime: "10:00",
+  endTime: "11:00",
+  room: "",
+  note: "",
+  target: { type: "event", slug: "", title: "" },
+};
+
 const tabs: Array<{ id: AdminTab; label: string; icon: React.ReactNode }> = [
   { id: "certificates", label: "Certificates", icon: <Award size={18} /> },
   { id: "courses", label: "Courses", icon: <BookOpen size={18} /> },
+  { id: "events", label: "Events", icon: <Sparkles size={18} /> },
+  { id: "schedule", label: "Schedule", icon: <CalendarDays size={18} /> },
   { id: "team", label: "Team", icon: <Users size={18} /> },
   { id: "contact", label: "Contact", icon: <Mail size={18} /> },
 ];
@@ -86,6 +114,8 @@ export function AdminDashboard() {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [content, setContent] = useState<SiteContent>({ courses: [], team: [], contact: emptyContact });
   const [adminCourses, setAdminCourses] = useState<CourseDetail[]>([]);
+  const [adminEvents, setAdminEvents] = useState<AcademyEvent[]>([]);
+  const [adminSchedule, setAdminSchedule] = useState<WeeklyScheduleItem[]>([]);
   const [activeCourseSlug, setActiveCourseSlug] = useState("");
   const [certificateForm, setCertificateForm] = useState(emptyCertificateForm);
   const [search, setSearch] = useState("");
@@ -136,6 +166,26 @@ export function AdminDashboard() {
     setActiveCourseSlug((current) => current || data.courses[0]?.slug || "");
   }
 
+  async function loadEvents(nextPassword = activePassword) {
+    const response = await fetch("/api/admin/events", {
+      headers: { "x-admin-password": nextPassword },
+    });
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.message || "Could not load events.");
+    setAdminEvents(data.events);
+  }
+
+  async function loadSchedule(nextPassword = activePassword) {
+    const response = await fetch("/api/admin/schedule", {
+      headers: { "x-admin-password": nextPassword },
+    });
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.message || "Could not load schedule.");
+    setAdminSchedule(data.schedule);
+  }
+
   async function login(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
@@ -155,7 +205,7 @@ export function AdminDashboard() {
 
     try {
       setActivePassword(password);
-      await Promise.all([loadCertificates(password), loadContent(password), loadCourses(password)]);
+      await Promise.all([loadCertificates(password), loadContent(password), loadCourses(password), loadEvents(password), loadSchedule(password)]);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not load dashboard.");
     }
@@ -258,6 +308,54 @@ export function AdminDashboard() {
     );
   }
 
+  function updateEvent(index: number, key: EventTextKey, value: string) {
+    setAdminEvents((current) =>
+      current.map((event, eventIndex) => (eventIndex === index ? { ...event, [key]: value } : event)),
+    );
+  }
+
+  function addEvent() {
+    setAdminEvents((current) => [
+      ...current,
+      { ...emptyEvent, slug: `new-academy-event-${current.length + 1}` },
+    ]);
+  }
+
+  function removeEvent(index: number) {
+    setAdminEvents((current) => current.filter((_, eventIndex) => eventIndex !== index));
+  }
+
+  function updateScheduleItem(index: number, key: ScheduleTextKey, value: string) {
+    setAdminSchedule((current) =>
+      current.map((item, itemIndex) => (itemIndex === index ? { ...item, [key]: value } : item)),
+    );
+  }
+
+  function updateScheduleTarget(index: number, target: ScheduleTarget) {
+    setAdminSchedule((current) =>
+      current.map((item, itemIndex) => (itemIndex === index ? { ...item, target } : item)),
+    );
+  }
+
+  function addScheduleItem() {
+    const firstEvent = adminEvents[0];
+    const firstCourse = adminCourses[0];
+    const target: ScheduleTarget = firstEvent
+      ? { type: "event", slug: firstEvent.slug, title: firstEvent.title }
+      : firstCourse
+        ? { type: "course", slug: firstCourse.slug, title: firstCourse.title }
+        : emptyScheduleItem.target;
+
+    setAdminSchedule((current) => [
+      ...current,
+      { ...emptyScheduleItem, id: `schedule-${crypto.randomUUID()}`, target },
+    ]);
+  }
+
+  function removeScheduleItem(index: number) {
+    setAdminSchedule((current) => current.filter((_, itemIndex) => itemIndex !== index));
+  }
+
   function updateTeamMember(index: number, key: keyof TeamMember, value: string) {
     setContent((current) => ({
       ...current,
@@ -328,6 +426,64 @@ export function AdminDashboard() {
     }
   }
 
+  async function saveEvents() {
+    setSavingContent(true);
+    setMessage("");
+
+    try {
+      const response = await fetchWithTimeout("/api/admin/events", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": activePassword,
+        },
+        body: JSON.stringify({ events: adminEvents }),
+      });
+      const data = await readResponseJson(response);
+
+      if (!response.ok) {
+        setMessage(data.message || "Could not save events.");
+        return;
+      }
+
+      setAdminEvents(data.events);
+      setMessage("Events saved.");
+    } catch (error) {
+      setMessage(getClientErrorMessage(error, "Could not save events."));
+    } finally {
+      setSavingContent(false);
+    }
+  }
+
+  async function saveSchedule() {
+    setSavingContent(true);
+    setMessage("");
+
+    try {
+      const response = await fetchWithTimeout("/api/admin/schedule", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": activePassword,
+        },
+        body: JSON.stringify({ schedule: adminSchedule }),
+      });
+      const data = await readResponseJson(response);
+
+      if (!response.ok) {
+        setMessage(data.message || "Could not save schedule.");
+        return;
+      }
+
+      setAdminSchedule(data.schedule);
+      setMessage("Schedule saved.");
+    } catch (error) {
+      setMessage(getClientErrorMessage(error, "Could not save schedule."));
+    } finally {
+      setSavingContent(false);
+    }
+  }
+
   function addTeamMember() {
     setContent((current) => ({
       ...current,
@@ -363,9 +519,11 @@ export function AdminDashboard() {
           <p className="text-xs font-bold uppercase tracking-[0.32em] text-[#b97866]">Academy manager</p>
           <h1 className="mt-3 font-display text-5xl font-semibold">Admin dashboard</h1>
         </div>
-        <div className="grid grid-cols-3 gap-3 text-center sm:min-w-[390px]">
+        <div className="grid grid-cols-3 gap-3 text-center sm:min-w-[520px] lg:grid-cols-5">
           <StatCard value={String(certificates.length)} label="Certificates" />
           <StatCard value={String(adminCourses.length)} label="Courses" />
+          <StatCard value={String(adminEvents.length)} label="Events" />
+          <StatCard value={String(adminSchedule.length)} label="Sessions" />
           <StatCard value={String(content.team.length)} label="Team" />
         </div>
       </div>
@@ -470,6 +628,44 @@ export function AdminDashboard() {
                 onCurriculumChange={(value) => updateCourseCurriculum(course.slug, value)}
               />
             ))}
+          </div>
+        </ContentPanel>
+      )}
+
+      {activeTab === "events" && (
+        <ContentPanel title="Events" description="Edit public event pages, event cards, dates, prices, and photos." onAdd={addEvent} onSave={() => void saveEvents()} saving={savingContent}>
+          <div className="grid gap-5 xl:grid-cols-2">
+            {adminEvents.map((event, index) => (
+              <EventEditor
+                key={`${event.slug}-${index}`}
+                event={event}
+                onChange={(key, value) => updateEvent(index, key, value)}
+                onRemove={() => removeEvent(index)}
+              />
+            ))}
+            {adminEvents.length === 0 && <p className="rounded-[1.25rem] bg-[#fbf7f1] p-6 text-sm text-[#6c5851]">No events yet. Add one to create an event page.</p>}
+          </div>
+        </ContentPanel>
+      )}
+
+      {activeTab === "schedule" && (
+        <ContentPanel title="Schedule" description="Edit weekly sessions. Choose the week, day, time, and link each session to a course or event." onAdd={addScheduleItem} onSave={() => void saveSchedule()} saving={savingContent}>
+          <div className="grid gap-5">
+            {adminSchedule
+              .map((item, index) => ({ item, index }))
+              .sort((a, b) => `${a.item.date} ${a.item.startTime}`.localeCompare(`${b.item.date} ${b.item.startTime}`))
+              .map(({ item, index }) => (
+              <ScheduleEditor
+                key={`${item.id}-${index}`}
+                item={item}
+                courses={adminCourses}
+                events={adminEvents}
+                onTextChange={(key, value) => updateScheduleItem(index, key, value)}
+                onTargetChange={(target) => updateScheduleTarget(index, target)}
+                onRemove={() => removeScheduleItem(index)}
+              />
+            ))}
+            {adminSchedule.length === 0 && <p className="rounded-[1.25rem] bg-[#fbf7f1] p-6 text-sm text-[#6c5851]">No schedule items yet. Add a session to show it on the weekly schedule page.</p>}
           </div>
         </ContentPanel>
       )}
@@ -617,6 +813,89 @@ function CourseEditor({
         <AdminTextarea label="Possible masterclasses, one per line" value={listToLines(course.possibleMasterclasses)} onChange={(value) => onListChange("possibleMasterclasses", value)} />
         <AdminTextarea label="Event details supported, one per line" value={listToLines(course.eventSupport)} onChange={(value) => onListChange("eventSupport", value)} />
         <AdminTextarea label="Final result" value={course.finalResult} onChange={(value) => onChange("finalResult", value)} />
+      </div>
+    </div>
+  );
+}
+
+function EventEditor({ event, onChange, onRemove }: { event: AcademyEvent; onChange: (key: EventTextKey, value: string) => void; onRemove: () => void }) {
+  return (
+    <EditableBlock title={event.title || "New event"} imageUrl={event.imageUrl} onRemove={onRemove}>
+      <ImageUpload label="Event picture" value={event.imageUrl} onChange={(value) => onChange("imageUrl", value)} />
+      <div className="grid gap-4 md:grid-cols-2">
+        <AdminInput label="Event title" value={event.title} onChange={(value) => onChange("title", value)} />
+        <AdminInput label="Slug" value={event.slug} onChange={(value) => onChange("slug", value)} />
+        <AdminInput label="Category" value={event.category} onChange={(value) => onChange("category", value)} />
+        <AdminInput label="Price" value={event.price} onChange={(value) => onChange("price", value)} />
+        <AdminInput label="Date label" value={event.dateLabel} onChange={(value) => onChange("dateLabel", value)} icon={<CalendarDays size={16} />} />
+        <AdminInput label="Time label" value={event.timeLabel} onChange={(value) => onChange("timeLabel", value)} icon={<Clock size={16} />} />
+        <AdminInput label="Location" value={event.location} onChange={(value) => onChange("location", value)} icon={<MapPin size={16} />} />
+      </div>
+      <AdminTextarea label="Short event description" value={event.shortDescription} onChange={(value) => onChange("shortDescription", value)} />
+      <AdminTextarea label="Full event description" value={event.longDescription} onChange={(value) => onChange("longDescription", value)} />
+    </EditableBlock>
+  );
+}
+
+function ScheduleEditor({
+  item,
+  courses,
+  events,
+  onTextChange,
+  onTargetChange,
+  onRemove,
+}: {
+  item: WeeklyScheduleItem;
+  courses: CourseDetail[];
+  events: AcademyEvent[];
+  onTextChange: (key: ScheduleTextKey, value: string) => void;
+  onTargetChange: (target: ScheduleTarget) => void;
+  onRemove: () => void;
+}) {
+  const targetValue = `${item.target.type}:${item.target.slug}`;
+  const targetOptions = [
+    ...courses.map((course) => ({ value: `course:${course.slug}`, label: `Course - ${course.title}`, target: { type: "course" as const, slug: course.slug, title: course.title } })),
+    ...events.map((event) => ({ value: `event:${event.slug}`, label: `Event - ${event.title}`, target: { type: "event" as const, slug: event.slug, title: event.title } })),
+  ];
+
+  return (
+    <div className="rounded-[1.5rem] border border-[#b97866]/14 bg-white/70 p-5">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <h3 className="font-semibold">{item.target.title || "Schedule session"}</h3>
+          <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#8f695e]">{item.date || "Choose a date"}</p>
+        </div>
+        <button type="button" onClick={onRemove} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-red-500/20 text-red-700 transition hover:bg-red-50" aria-label={`Remove ${item.target.title || "schedule item"}`}>
+          <Trash2 size={16} />
+        </button>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <AdminInput label="Date" type="date" value={item.date} onChange={(value) => onTextChange("date", value)} icon={<CalendarDays size={16} />} />
+        <AdminInput label="Start time" type="time" value={item.startTime} onChange={(value) => onTextChange("startTime", value)} icon={<Clock size={16} />} />
+        <AdminInput label="End time" type="time" value={item.endTime} onChange={(value) => onTextChange("endTime", value)} icon={<Clock size={16} />} />
+        <AdminInput label="Room / place" value={item.room} onChange={(value) => onTextChange("room", value)} icon={<MapPin size={16} />} />
+      </div>
+
+      <label className="mt-4 block text-sm font-semibold text-[#51433f]">
+        Course or event
+        <select
+          required
+          value={targetValue}
+          onChange={(event) => {
+            const selected = targetOptions.find((option) => option.value === event.target.value);
+            if (selected) onTargetChange(selected.target);
+          }}
+          className="mt-2 min-h-12 w-full rounded-full border border-[#b97866]/20 bg-white px-5 text-sm outline-none transition focus:border-[#b97866] focus:ring-4 focus:ring-[#f7d9dc]"
+        >
+          <option value="">Choose a course or event</option>
+          {targetOptions.map((option) => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
+      </label>
+      <div className="mt-4">
+        <AdminTextarea label="Schedule note" value={item.note} onChange={(value) => onTextChange("note", value)} />
       </div>
     </div>
   );

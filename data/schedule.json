@@ -1,0 +1,119 @@
+[
+  {
+    "id": "previous-skin-lab",
+    "date": "2026-07-14",
+    "startTime": "10:00",
+    "endTime": "13:00",
+    "room": "Training Room A",
+    "note": "Skin analysis and cleansing practice",
+    "target": {
+      "type": "course",
+      "slug": "skin-care-training",
+      "title": "Skin Care Training Program"
+    }
+  },
+  {
+    "id": "previous-product-discovery",
+    "date": "2026-07-16",
+    "startTime": "16:00",
+    "endTime": "17:30",
+    "room": "Product Lab",
+    "note": "Foundation matching and prep demo",
+    "target": {
+      "type": "event",
+      "slug": "product-discovery-session",
+      "title": "Product Discovery Session"
+    }
+  },
+  {
+    "id": "current-professional-makeup",
+    "date": "2026-07-21",
+    "startTime": "11:00",
+    "endTime": "14:00",
+    "room": "Main Studio",
+    "note": "Theory, skin prep, and product setup",
+    "target": {
+      "type": "course",
+      "slug": "professional-makeup",
+      "title": "Professional Makeup Course"
+    }
+  },
+  {
+    "id": "current-self-makeup",
+    "date": "2026-07-22",
+    "startTime": "15:00",
+    "endTime": "18:00",
+    "room": "Beauty Bar",
+    "note": "Daily makeup practice",
+    "target": {
+      "type": "course",
+      "slug": "self-makeup",
+      "title": "Self Makeup / Auto Self Makeup Training"
+    }
+  },
+  {
+    "id": "current-product-discovery",
+    "date": "2026-07-23",
+    "startTime": "16:00",
+    "endTime": "17:30",
+    "room": "Product Lab",
+    "note": "Product testing and shade selection",
+    "target": {
+      "type": "event",
+      "slug": "product-discovery-session",
+      "title": "Product Discovery Session"
+    }
+  },
+  {
+    "id": "current-glow-night",
+    "date": "2026-07-25",
+    "startTime": "18:00",
+    "endTime": "20:30",
+    "room": "Masterclass Studio",
+    "note": "Soft glam and glow finishing",
+    "target": {
+      "type": "event",
+      "slug": "glow-night-masterclass",
+      "title": "Glow Night Masterclass"
+    }
+  },
+  {
+    "id": "next-lamination",
+    "date": "2026-07-27",
+    "startTime": "12:00",
+    "endTime": "14:00",
+    "room": "Technique Room",
+    "note": "Lamination tools, safety, and finishing",
+    "target": {
+      "type": "course",
+      "slug": "lamination",
+      "title": "Lamination Course"
+    }
+  },
+  {
+    "id": "next-mesotherapy",
+    "date": "2026-07-31",
+    "startTime": "10:30",
+    "endTime": "12:30",
+    "room": "Aesthetic Lab",
+    "note": "Device usage and protocol overview",
+    "target": {
+      "type": "course",
+      "slug": "mesotherapy",
+      "title": "Mesotherapy Course"
+    }
+  },
+  {
+    "id": "next-bridal-open-day",
+    "date": "2026-08-02",
+    "startTime": "11:00",
+    "endTime": "14:00",
+    "room": "Reception Studio",
+    "note": "Open day with sample bridal looks",
+    "target": {
+      "type": "event",
+      "slug": "bridal-beauty-open-day",
+      "title": "Bridal Beauty Open Day"
+    }
+  }
+]

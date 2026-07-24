@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Glow Night Masterclass",
+    "slug": "glow-night-masterclass",
+    "category": "Masterclass",
+    "shortDescription": "A placeholder evening event focused on luminous skin, soft glam, and camera-ready finishing.",
+    "longDescription": "This sample event can be replaced later with the real masterclass details. For now, it gives visitors a polished place to discover upcoming academy events, see timing, and understand what kind of session is happening.",
+    "dateLabel": "Friday evening",
+    "timeLabel": "6:00 PM - 8:30 PM",
+    "location": "EB Academy Studio",
+    "price": "$45 placeholder",
+    "imageUrl": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1200&q=85"
+  },
+  {
+    "title": "Bridal Beauty Open Day",
+    "slug": "bridal-beauty-open-day",
+    "category": "Open Day",
+    "shortDescription": "A casual preview day with sample bridal looks, product demos, and course guidance.",
+    "longDescription": "This placeholder open day is designed for visitors who want to experience the academy before booking a course. The content is temporary and can be swapped with a real event announcement from the admin workflow later.",
+    "dateLabel": "Saturday",
+    "timeLabel": "11:00 AM - 2:00 PM",
+    "location": "EB Academy Reception",
+    "price": "Free placeholder",
+    "imageUrl": "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=1200&q=85"
+  },
+  {
+    "title": "Product Discovery Session",
+    "slug": "product-discovery-session",
+    "category": "Event",
+    "shortDescription": "A hands-on product session for foundation matching, skin preparation, and finishing choices.",
+    "longDescription": "This sample product session gives the schedule something event-based to point to. It can later become a real brand activation, academy demo, or private beauty education session.",
+    "dateLabel": "Wednesday",
+    "timeLabel": "4:00 PM - 5:30 PM",
+    "location": "EB Academy Lab",
+    "price": "$20 placeholder",
+    "imageUrl": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1200&q=85"
+  }
+]

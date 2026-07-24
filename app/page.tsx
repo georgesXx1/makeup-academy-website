@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Award, Brush, HeartHandshake, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
+import { Award, Brush, CalendarDays, HeartHandshake, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
 import { ButtonLink } from "@/components/ButtonLink";
 import { CourseCard } from "@/components/CourseCard";
 import { SectionHeading } from "@/components/SectionHeading";
@@ -29,19 +29,23 @@ export default async function Home() {
 
   return (
     <main>
-      <section className="soft-grid px-5 py-14 lg:px-8 lg:py-16">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:min-h-[620px] lg:grid-cols-[0.95fr_1.05fr]">
+      <section className="soft-grid px-5 py-12 lg:px-8 lg:py-16">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:min-h-[650px] lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <div className="animate-fade-up">
-            <p className="text-xs font-bold uppercase tracking-[0.34em] text-[#b97866]">Premium beauty education</p>
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-[#b97866]">
+              <CalendarDays size={17} />
+              Premium beauty education
+            </p>
             <h1 className="mt-5 max-w-3xl font-display text-5xl font-semibold leading-[0.98] text-[#151313] md:text-7xl">
               EB Academy
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[#5f4d47]">
-              Eliano Bou Assi Academy offers elegant, confidence-building makeup courses for artists who want refined technique, a premium client experience, and verified certification.
+              Eliano Bou Assi Academy offers elegant makeup education, weekly course sessions, and special beauty events in one refined academy experience.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/courses">Explore courses</ButtonLink>
-              <ButtonLink href="/verify" variant="light">Verify certificate</ButtonLink>
+              <ButtonLink href="/events">Open events page</ButtonLink>
+              <ButtonLink href="/schedule" variant="light">Open weekly schedule</ButtonLink>
+              <ButtonLink href="/courses" variant="light">Browse courses</ButtonLink>
             </div>
           </div>
           <div className="animate-fade-up" style={{ animationDelay: "120ms" }}>

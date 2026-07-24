@@ -132,8 +132,8 @@
   z-index: 10;
   display: grid;
   height: 100%;
-  grid-template-rows: 164px 396px 174px 24px;
-  padding: 42px 154px 34px;
+  grid-template-rows: 164px 396px 166px 36px;
+  padding: 42px 154px 42px;
   text-align: center;
 }
 
@@ -460,7 +460,7 @@
 }
 
 .bottomNote {
-  align-self: end;
+  align-self: center;
   color: #4d3a23;
   font-size: 12px;
   font-style: italic;
