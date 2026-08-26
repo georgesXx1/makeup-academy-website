@@ -6,7 +6,7 @@
   --ivory: #fbf7ec;
   position: relative;
   width: 1200px;
-  height: 848px;
+  height: 848.35px;
   margin: 0 auto;
   overflow: hidden;
   background:
@@ -142,7 +142,7 @@
   width: 50px;
   height: 66px;
   object-fit: contain;
-  margin: 16px auto 0;
+  margin: 28px auto 0;
   filter: drop-shadow(0 5px 8px rgba(71, 47, 13, 0.12));
 }
 

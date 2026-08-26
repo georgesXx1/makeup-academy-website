@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { Download, Printer } from "lucide-react";
-import { toPng } from "html-to-image";
+import { toBlob } from "html-to-image";
 
 const A4_LANDSCAPE_WIDTH = 3508;
+const A4_LANDSCAPE_HEIGHT = 2480;
+const CERTIFICATE_PREVIEW_WIDTH = 1200;
+const CERTIFICATE_PREVIEW_HEIGHT = 848.35;
 
 type CertificateActionsProps = {
   code: string;
@@ -23,22 +26,38 @@ export function CertificateActions({ code, studentName }: CertificateActionsProp
 
     try {
       await document.fonts.ready;
-      const rect = certificate.getBoundingClientRect();
       await waitForImages(certificate);
 
-      const dataUrl = await toPng(certificate, {
+      const blob = await toBlob(certificate, {
         backgroundColor: "#fbf7ec",
+        canvasHeight: A4_LANDSCAPE_HEIGHT,
+        canvasWidth: A4_LANDSCAPE_WIDTH,
         cacheBust: true,
-        pixelRatio: A4_LANDSCAPE_WIDTH / rect.width,
+        height: CERTIFICATE_PREVIEW_HEIGHT,
+        pixelRatio: 1,
+        skipAutoScale: true,
         skipFonts: false,
+        style: {
+          boxShadow: "none",
+          height: `${CERTIFICATE_PREVIEW_HEIGHT}px`,
+          margin: "0",
+          width: `${CERTIFICATE_PREVIEW_WIDTH}px`,
+        },
+        width: CERTIFICATE_PREVIEW_WIDTH,
       });
 
+      if (!blob) {
+        throw new Error("Could not prepare certificate image.");
+      }
+
+      const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = dataUrl;
+      link.href = url;
       link.download = `${safeFilename(code || studentName || "certificate")}-a4-landscape.png`;
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     } finally {
       setDownloading(false);
     }
