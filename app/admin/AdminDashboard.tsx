@@ -57,6 +57,28 @@ const emptyEvent: AcademyEvent = {
   imageUrl: "",
 };
 
+function createEmptyCourse(slug: string): CourseDetail {
+  return {
+    title: "New course",
+    slug,
+    category: "Course",
+    shortDescription: "",
+    duration: "",
+    price: "",
+    location: "",
+    certificates: [],
+    targetAudience: [],
+    longDescription: "",
+    curriculum: [],
+    importantNotes: [],
+    possibleMasterclasses: [],
+    eventSupport: [],
+    whatStudentsWillLearn: [],
+    finalResult: "",
+    imageUrl: "",
+  };
+}
+
 const emptyScheduleItem: WeeklyScheduleItem = {
   id: "",
   date: new Date().toISOString().slice(0, 10),
@@ -116,7 +138,7 @@ export function AdminDashboard() {
   const [adminCourses, setAdminCourses] = useState<CourseDetail[]>([]);
   const [adminEvents, setAdminEvents] = useState<AcademyEvent[]>([]);
   const [adminSchedule, setAdminSchedule] = useState<WeeklyScheduleItem[]>([]);
-  const [activeCourseSlug, setActiveCourseSlug] = useState("");
+  const [activeCourseIndex, setActiveCourseIndex] = useState(0);
   const [certificateForm, setCertificateForm] = useState(emptyCertificateForm);
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
@@ -163,7 +185,7 @@ export function AdminDashboard() {
 
     if (!response.ok) throw new Error(data.message || "Could not load courses.");
     setAdminCourses(data.courses);
-    setActiveCourseSlug((current) => current || data.courses[0]?.slug || "");
+    setActiveCourseIndex((current) => current >= 0 && current < data.courses.length ? current : data.courses.length ? 0 : -1);
   }
 
   async function loadEvents(nextPassword = activePassword) {
@@ -290,22 +312,52 @@ export function AdminDashboard() {
     }
   }
 
-  function updateCourse(slug: string, key: CourseTextKey, value: string) {
+  function updateCourse(index: number, key: CourseTextKey, value: string) {
     setAdminCourses((current) =>
-      current.map((course) => (course.slug === slug ? { ...course, [key]: value } : course)),
+      current.map((course, courseIndex) => (courseIndex === index ? { ...course, [key]: value } : course)),
     );
   }
 
-  function updateCourseList(slug: string, key: ListCourseKey, value: string) {
+  function updateCourseList(index: number, key: ListCourseKey, value: string) {
     setAdminCourses((current) =>
-      current.map((course) => (course.slug === slug ? { ...course, [key]: linesToList(value) } : course)),
+      current.map((course, courseIndex) => (courseIndex === index ? { ...course, [key]: linesToList(value) } : course)),
     );
   }
 
-  function updateCourseCurriculum(slug: string, value: string) {
+  function updateCourseCurriculum(index: number, value: string) {
     setAdminCourses((current) =>
-      current.map((course) => (course.slug === slug ? { ...course, curriculum: parseCurriculumText(value) } : course)),
+      current.map((course, courseIndex) => (courseIndex === index ? { ...course, curriculum: parseCurriculumText(value) } : course)),
     );
+  }
+
+  function addCourse() {
+    const usedSlugs = new Set(adminCourses.map((course) => course.slug));
+    let slug = "new-course";
+    let suffix = 2;
+
+    while (usedSlugs.has(slug)) {
+      slug = `new-course-${suffix}`;
+      suffix += 1;
+    }
+
+    setAdminCourses((current) => [...current, createEmptyCourse(slug)]);
+    setActiveCourseIndex(adminCourses.length);
+    setMessage("New course added. Complete its details, then save changes.");
+  }
+
+  function removeCourse(index: number) {
+    const course = adminCourses[index];
+    if (!course || !window.confirm(`Remove "${course.title}" from the course catalog?`)) return;
+
+    const nextCourses = adminCourses.filter((_, courseIndex) => courseIndex !== index);
+    setAdminCourses(nextCourses);
+    setActiveCourseIndex((current) => {
+      if (nextCourses.length === 0) return -1;
+      if (current > index) return current - 1;
+      if (current === index) return Math.min(index, nextCourses.length - 1);
+      return current;
+    });
+    setMessage(`"${course.title}" removed. Save changes to update the public website.`);
   }
 
   function updateEvent(index: number, key: EventTextKey, value: string) {
@@ -418,6 +470,7 @@ export function AdminDashboard() {
       }
 
       setAdminCourses(data.courses);
+      setActiveCourseIndex((current) => current >= 0 && current < data.courses.length ? current : data.courses.length ? 0 : -1);
       setMessage("Courses saved.");
     } catch (error) {
       setMessage(getClientErrorMessage(error, "Could not save courses."));
@@ -603,31 +656,33 @@ export function AdminDashboard() {
       )}
 
       {activeTab === "courses" && (
-        <ContentPanel title="Courses" description="Open each course tab and edit the public course card plus the full detail page." onSave={() => void saveCourses()} saving={savingContent}>
+        <ContentPanel title="Courses" description="Add, remove, and edit every detail shown on the public course card and full course page." onAdd={addCourse} onSave={() => void saveCourses()} saving={savingContent}>
           <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
             <div className="rounded-[1.5rem] border border-[#b97866]/14 bg-white/70 p-3">
               <div className="grid gap-2">
-                {adminCourses.map((course) => (
+                {adminCourses.map((course, index) => (
                   <button
-                    key={course.slug}
+                    key={`${course.slug}-${index}`}
                     type="button"
-                    onClick={() => setActiveCourseSlug(course.slug)}
-                    className={`rounded-[1rem] px-4 py-3 text-left text-sm font-semibold transition ${activeCourseSlug === course.slug ? "bg-[#151313] text-[#f6ead7]" : "bg-[#fbf7f1] text-[#51433f] hover:bg-white"}`}
+                    onClick={() => setActiveCourseIndex(index)}
+                    className={`rounded-[1rem] px-4 py-3 text-left text-sm font-semibold transition ${activeCourseIndex === index ? "bg-[#151313] text-[#f6ead7]" : "bg-[#fbf7f1] text-[#51433f] hover:bg-white"}`}
                   >
                     {course.title}
                   </button>
                 ))}
+                {adminCourses.length === 0 && <p className="rounded-[1rem] bg-[#fbf7f1] px-4 py-3 text-sm text-[#6c5851]">No courses yet. Use Add to create the first one.</p>}
               </div>
             </div>
-            {adminCourses.filter((course) => course.slug === activeCourseSlug).map((course) => (
+            {adminCourses[activeCourseIndex] && (
               <CourseEditor
-                key={course.slug}
-                course={course}
-                onChange={(key, value) => updateCourse(course.slug, key, value)}
-                onListChange={(key, value) => updateCourseList(course.slug, key, value)}
-                onCurriculumChange={(value) => updateCourseCurriculum(course.slug, value)}
+                key={activeCourseIndex}
+                course={adminCourses[activeCourseIndex]}
+                onChange={(key, value) => updateCourse(activeCourseIndex, key, value)}
+                onListChange={(key, value) => updateCourseList(activeCourseIndex, key, value)}
+                onCurriculumChange={(value) => updateCourseCurriculum(activeCourseIndex, value)}
+                onRemove={() => removeCourse(activeCourseIndex)}
               />
-            ))}
+            )}
           </div>
         </ContentPanel>
       )}
@@ -783,15 +838,27 @@ function CourseEditor({
   onChange,
   onListChange,
   onCurriculumChange,
+  onRemove,
 }: {
   course: CourseDetail;
   onChange: (key: CourseTextKey, value: string) => void;
   onListChange: (key: ListCourseKey, value: string) => void;
   onCurriculumChange: (value: string) => void;
+  onRemove: () => void;
 }) {
   return (
     <div className="rounded-[1.5rem] border border-[#b97866]/14 bg-white/70 p-5">
       <div className="grid gap-5">
+        <div className="flex flex-col justify-between gap-3 border-b border-[#b97866]/12 pb-4 sm:flex-row sm:items-center">
+          <div>
+            <h3 className="font-display text-2xl font-semibold">{course.title || "Untitled course"}</h3>
+            <p className="mt-1 text-sm text-[#6c5851]">Everything below appears on this course&apos;s public card or detail page.</p>
+          </div>
+          <button type="button" onClick={onRemove} className="inline-flex items-center justify-center gap-2 rounded-full border border-red-500/20 bg-white px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50">
+            <Trash2 size={16} />
+            Remove course
+          </button>
+        </div>
         <ImageUpload label="Course picture" value={course.imageUrl} onChange={(value) => onChange("imageUrl", value)} />
         <div className="grid gap-4 md:grid-cols-2">
           <AdminInput label="Course title" value={course.title} onChange={(value) => onChange("title", value)} />
