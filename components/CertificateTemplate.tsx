@@ -6,6 +6,7 @@ export type CertificateTemplateData = {
   courseName: string;
   issueDate: string;
   code: string;
+  template?: "standard" | "two-signature";
 };
 
 type CertificateTemplateProps = {
@@ -18,6 +19,48 @@ export function CertificateTemplate({ certificate, baseUrl, qrCodeDataUrl }: Cer
   const verifyUrl = buildVerifyUrl(baseUrl, certificate.code);
   const studentNameStyle = getStudentNameStyle(certificate.studentName);
   const courseNameStyle = getCourseNameStyle(certificate.courseName);
+
+  if (certificate.template === "two-signature") {
+    return (
+      <article className={`${styles.certificate} ${styles.specialCertificate}`} data-certificate-template aria-label={`${certificate.studentName} EB Academy certificate`}>
+        <div className={styles.specialContent}>
+          <div className={styles.specialHeader}>
+            <img src="/brand-logo.png" alt="EB Academy logo" />
+            <span>EB ACADEMY</span>
+          </div>
+
+          <div className={styles.specialMain}>
+            <p className={styles.specialEyebrow}>A recognition of achievement</p>
+            <h1>Certificate of Completion</h1>
+            <div className={styles.specialDivider} aria-hidden="true"><span /></div>
+            <p className={styles.specialPresented}>This certificate is proudly presented to</p>
+            <p className={styles.specialStudent} style={studentNameStyle}>{certificate.studentName}</p>
+            <p className={styles.specialCompletion}>for successfully completing the training program</p>
+            <p className={styles.specialCourse} style={courseNameStyle}>{certificate.courseName}</p>
+          </div>
+
+          <section className={styles.specialFooter} aria-label="Signatures and verification">
+            <div className={styles.specialSignature}>
+              <div className={styles.specialSignatureSpace} aria-hidden="true" />
+              <div className={styles.specialSignatureLine} />
+              <p className={styles.specialSignatureName}>Nabil Makhoul</p>
+            </div>
+            <div className={styles.specialVerification}>
+              <img src={qrCodeDataUrl} alt={`QR code for certificate ${certificate.code}`} data-verify-url={verifyUrl} />
+              <p>SCAN TO VERIFY</p>
+              <span>{certificate.code}</span>
+            </div>
+            <div className={styles.specialSignature}>
+              <div className={styles.specialSignatureSpace}><span className={styles.specialSignatureImage} aria-label="Eliano Bou Assi signature">Eliano</span></div>
+              <div className={styles.specialSignatureLine} />
+              <p className={styles.specialSignatureName}>Eliano Bou Assi</p>
+              <p className={styles.specialSignatureTitle}>International Makeup Artist &amp; Beauty Educator</p>
+            </div>
+          </section>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article className={styles.certificate} data-certificate-template aria-label={`${certificate.studentName} EB Academy certificate`}>

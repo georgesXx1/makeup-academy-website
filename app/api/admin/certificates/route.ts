@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
     courseName?: string;
     issueDate?: string;
     code?: string;
+    template?: string;
   };
 
   const names = body.studentNames?.length
@@ -37,6 +38,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Participant name, course name, and issue date are required." }, { status: 400 });
   }
 
+  if (body.template && body.template !== "standard" && body.template !== "two-signature") {
+    return NextResponse.json({ message: "Invalid certificate template." }, { status: 400 });
+  }
+
+  const template: "standard" | "two-signature" = body.template === "two-signature" || (!body.template && body.courseName.trim().toLowerCase() === "special course") ? "two-signature" : "standard";
+
   try {
     if (names.length === 1) {
       const certificate = await addCertificate({
@@ -44,6 +51,7 @@ export async function POST(request: NextRequest) {
         courseName: body.courseName.trim(),
         issueDate: body.issueDate,
         code: body.code ?? "",
+        template,
       });
 
       return NextResponse.json({ certificate, certificates: [certificate] }, { status: 201 });
@@ -54,6 +62,7 @@ export async function POST(request: NextRequest) {
         studentName,
         courseName: body.courseName!.trim(),
         issueDate: body.issueDate!,
+        template,
       })),
     );
 
@@ -66,3 +75,4 @@ export async function POST(request: NextRequest) {
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
 }
+

@@ -24,6 +24,7 @@ const emptyCertificateForm = {
   studentNames: "",
   courseName: "",
   issueDate: new Date().toISOString().slice(0, 10),
+  template: "standard" as "standard" | "two-signature",
 };
 
 const emptyTeamMember: TeamMember = {
@@ -254,6 +255,7 @@ export function AdminDashboard() {
         studentNames: names,
         courseName: certificateForm.courseName,
         issueDate: certificateForm.issueDate,
+        template: certificateForm.template,
       }),
     });
     const data = await response.json();
@@ -263,7 +265,7 @@ export function AdminDashboard() {
       return;
     }
 
-    setCertificateForm({ ...emptyCertificateForm, courseName: certificateForm.courseName });
+    setCertificateForm({ ...emptyCertificateForm, courseName: certificateForm.courseName, template: certificateForm.template });
     await loadCertificates();
     setMessage(`Created ${data.certificates.length} certificate${data.certificates.length === 1 ? "" : "s"}.`);
   }
@@ -607,9 +609,17 @@ export function AdminDashboard() {
               <AdminTextarea label="Participant names" value={certificateForm.studentNames} placeholder="One name per line, or separated by commas" onChange={(value) => setCertificateForm({ ...certificateForm, studentNames: value })} />
               <label className="block text-sm font-semibold text-[#51433f]">
                 Course name
-                <select required value={certificateForm.courseName} onChange={(event) => setCertificateForm({ ...certificateForm, courseName: event.target.value })} className="mt-2 min-h-12 w-full rounded-full border border-[#b97866]/20 bg-white px-5 text-sm outline-none transition focus:border-[#b97866] focus:ring-4 focus:ring-[#f7d9dc]">
+                <select required value={certificateForm.courseName} onChange={(event) => setCertificateForm({ ...certificateForm, courseName: event.target.value, template: event.target.value.trim().toLowerCase() === "special course" ? "two-signature" : "standard" })} className="mt-2 min-h-12 w-full rounded-full border border-[#b97866]/20 bg-white px-5 text-sm outline-none transition focus:border-[#b97866] focus:ring-4 focus:ring-[#f7d9dc]">
                   <option value="">Choose a course</option>
                   {adminCourses.map((course) => <option key={course.slug} value={course.title}>{course.title}</option>)}
+                  {!adminCourses.some((course) => course.title.trim().toLowerCase() === "special course") && <option value="Special Course">Special Course</option>}
+                </select>
+              </label>
+              <label className="block text-sm font-semibold text-[#51433f]">
+                Certificate template
+                <select value={certificateForm.template} onChange={(event) => setCertificateForm({ ...certificateForm, template: event.target.value as "standard" | "two-signature" })} className="mt-2 min-h-12 w-full rounded-full border border-[#b97866]/20 bg-white px-5 text-sm outline-none transition focus:border-[#b97866] focus:ring-4 focus:ring-[#f7d9dc]">
+                  <option value="standard">Standard ? Eliano Bou Assi</option>
+                  <option value="two-signature">Two signatures ? Eliano Bou Assi and Nabil Makhoul</option>
                 </select>
               </label>
               <AdminInput label="Issue date" type="date" value={certificateForm.issueDate} onChange={(value) => setCertificateForm({ ...certificateForm, issueDate: value })} />

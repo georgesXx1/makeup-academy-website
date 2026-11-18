@@ -5,6 +5,7 @@ export type Certificate = {
   courseName: string;
   issueDate: string;
   code: string;
+  template?: "standard" | "two-signature";
 };
 
 const certificateFile = "certificates.json";
@@ -56,6 +57,7 @@ export async function addCertificates(inputs: Array<Omit<Certificate, "code"> & 
       studentName: input.studentName.trim(),
       courseName: input.courseName.trim(),
       issueDate: input.issueDate,
+      template: input.template,
       code,
     });
   }
