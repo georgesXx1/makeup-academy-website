@@ -44,6 +44,7 @@ export function CertificateTemplate({ certificate, baseUrl, qrCodeDataUrl }: Cer
               <div className={styles.specialSignatureSpace} aria-hidden="true" />
               <div className={styles.specialSignatureLine} />
               <p className={styles.specialSignatureName}>Nabil Makhoul</p>
+              <p className={styles.specialSignatureTitle}>Professional Trainer &amp; Makeup Artist</p>
             </div>
             <div className={styles.specialVerification}>
               <img src={qrCodeDataUrl} alt={`QR code for certificate ${certificate.code}`} data-verify-url={verifyUrl} />
